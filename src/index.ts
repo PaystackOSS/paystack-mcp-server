@@ -1,8 +1,12 @@
+#!/usr/bin/env node
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { TOOLS } from './tools/index.js';
 import { RESOURCES } from './resources/index.js';
-import 'dotenv/config';
 
 // Create server instance
 const server = new McpServer({

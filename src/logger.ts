@@ -114,24 +114,28 @@ class Logger {
   }
 
   debug(message: string, meta?: any) {
+    // Disabled for MCP stdio communication
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.log(this.formatLog(LogLevel.DEBUG, message, meta));
+      console.error(this.formatLog(LogLevel.DEBUG, message, meta));
     }
   }
 
   info(message: string, meta?: any) {
+    // Disabled for MCP stdio communication
     if (this.shouldLog(LogLevel.INFO)) {
-      console.log(this.formatLog(LogLevel.INFO, message, meta));
+      console.error(this.formatLog(LogLevel.INFO, message, meta));
     }
   }
 
   warn(message: string, meta?: any) {
+    // Disabled for MCP stdio communication
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatLog(LogLevel.WARN, message, meta));
+      console.error(this.formatLog(LogLevel.WARN, message, meta));
     }
   }
 
   error(message: string, meta?: any) {
+    // Disabled for MCP stdio communication
     if (this.shouldLog(LogLevel.ERROR)) {
       console.error(this.formatLog(LogLevel.ERROR, message, meta));
     }

@@ -1,4 +1,8 @@
 import type { PaystackResponse, PaystackError } from "./types.js";
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const PAYSTACK_BASE_URL = process.env.PAYSTACK_BASE_URL || 'https://api.paystack.co';
 const USER_AGENT = process.env.USER_AGENT || 'Paystack-MCP-Client';
@@ -24,42 +28,46 @@ class PaystackClient {
     this.userAgent = userAgent;
     this.timeout = timeout;
   }
-  
-  async get<T = any>(endpoint: string, params?: Record<string, string | number>): Promise<PaystackResponse<T>> {
-    const url = params ? `${endpoint}?${new URLSearchParams(params as Record<string, string>)}` : endpoint;
-    return this.makeRequest<T>('GET', url);
-  }
 
-  async post<T = any>(endpoint: string, data?: any): Promise<PaystackResponse<T>> {
-    return this.makeRequest<T>('POST', endpoint, data);
-  }
+  /**
+   * Make an HTTP request to Paystack API
+   * @param method - HTTP method (GET, POST, PUT, DELETE, etc.)
+   * @param endpoint - API endpoint path
+   * @param data - Request body for POST/PUT/PATCH or query params for GET
+   */
 
-  private async makeRequest<T>(
+  async makeRequest<T>(
     method: string, 
     endpoint: string, 
     data?: any
   ): Promise<PaystackResponse<T>> {
-    const url = `${this.baseUrl}${endpoint}`;
     
+    let url = `${this.baseUrl}${endpoint}`;
+    
+    if (method === 'GET' && data) {
+      const params = new URLSearchParams(data as Record<string, string>);
+      url = `${url}?${params}`;
+    }
+
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${this.secretKey}`,
       'User-Agent': this.userAgent,
       'Accept': 'application/json',
     };
 
-    const config: RequestInit = {
-      method: method.toUpperCase(),
-      headers: headers
+    const options: RequestInit = {
+      method: method.toUpperCase()
     };
 
     // Add Content-Type and body for requests with data
-    if (data && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
+    if (data && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase())) {
       headers['Content-Type'] = 'application/json';
-      config.body = JSON.stringify(data);
+      options.body = JSON.stringify(data);
     }
-
+    options.headers = headers;
+    
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(url, options);
       
       // Parse response
       const responseText = await response.text();
@@ -84,5 +92,5 @@ class PaystackClient {
     }
   }
 export const paystackClient = new PaystackClient(
-  process.env.PAYSTACK_SECRET_KEY!
+  process.env.PAYSTACK_SECRET_KEY_TEST!
 );

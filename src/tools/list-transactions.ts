@@ -41,11 +41,7 @@ export const listTransactions: ToolDefinition = {
 
     logger.info('Listing transactions', { params });
 
-    const response = await paystackClient.get('/transaction', params);
-
-    logger.info('Transactions retrieved successfully', {
-      count: response.data?.length || 0,
-    });
+    const response = await paystackClient.makeRequest<any>('GET', '/transaction', params);
 
     return {
       content: [

@@ -12,6 +12,9 @@ export const listTransactionsResource: ResourceDefinition = {
   },
 
   handler: async (uri: URL) => {
+    try {
+
+    
     // Convert URL to string for pattern matching
     const uriString = uri.toString();
     
@@ -39,7 +42,7 @@ export const listTransactionsResource: ResourceDefinition = {
     });
 
     // Fetch transactions data using shared client
-    const response = await paystackClient.get('/transaction', params);
+    const response = await paystackClient.makeRequest<any>('GET', '/transaction', params);
 
     const transactionCount = response.data?.data?.length || 0;
     
@@ -60,5 +63,15 @@ export const listTransactionsResource: ResourceDefinition = {
         },
       ],
     };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        contents: [{
+          uri: uri.toString(),
+          mimeType: 'application/json',
+          text: JSON.stringify({ error: errorMessage }, null, 2),
+        }],
+      };
+    }
   },
 };
