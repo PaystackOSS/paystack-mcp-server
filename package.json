@@ -2,13 +2,14 @@
   "name": "paystack-mcp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "bin": {
     "paystack": "./build/index.js"
   },
   "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "dev": "tsx src/index.ts",
-    "build": "tsc && chmod 755 build/index.js",
+    "inspect": "set DANGEROUSLY_OMIT_AUTH=true && CLIENT_PORT=8090 SERVER_PORT=9000 npx @modelcontextprotocol/inspector npm run dev",
     "test": "mocha"
   },
   "files": [
