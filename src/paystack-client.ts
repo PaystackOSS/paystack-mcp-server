@@ -44,11 +44,6 @@ class PaystackClient {
     
     let url = `${this.baseUrl}${endpoint}`;
     
-    if (method === 'GET' && data) {
-      const params = new URLSearchParams(data as Record<string, string>);
-      url = `${url}?${params}`;
-    }
-
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${this.secretKey}`,
       'User-Agent': this.userAgent,

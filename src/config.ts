@@ -6,7 +6,9 @@ dotenv.config();
 
 // Define schema for required environment variables
 const envSchema = z.object({
-  PAYSTACK_SECRET_KEY_TEST: z.string().min(1, 'PAYSTACK_SECRET_KEY_TEST is required'),
+  PAYSTACK_SECRET_KEY_TEST: z.string().min(30, 'PAYSTACK_SECRET_KEY_TEST is required').refine(val => val.startsWith('sk_test_'), {
+    message: 'PAYSTACK_SECRET_KEY_TEST must begin with "sk_test_. No live keys allowed."',
+  }),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
