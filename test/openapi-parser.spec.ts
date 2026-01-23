@@ -1,11 +1,8 @@
 import assert from "node:assert";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { OpenAPIParser} from "../src/openapi-parser.js";
 
 describe("OpenAPI parsing", () => {
-  // const __filename = fileURLToPath(import.meta.url);
-  // const __dirname = path.dirname(__filename);
   const oasPath = path.join(__dirname, "../", "src/data/paystack.openapi.yaml");
   const openapi = new OpenAPIParser(oasPath);
 
