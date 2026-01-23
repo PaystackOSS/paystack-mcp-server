@@ -62,8 +62,7 @@ function redactSensitiveData(obj: any): any {
   if (typeof obj === 'string') {
     // Redact bearer tokens and API keys in strings
     return obj.replace(/Bearer\s+\w+/gi, 'Bearer [REDACTED]')
-              .replace(/sk_test_\w+/g, '[REDACTED_SECRET_KEY]')
-              .replace(/pk_test_\w+/g, '[REDACTED_PUBLIC_KEY]');
+              .replace(/sk_test_\w+/g, '[REDACTED_SECRET_KEY]');
   }
 
   if (Array.isArray(obj)) {
