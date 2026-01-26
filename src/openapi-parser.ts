@@ -240,7 +240,7 @@ export class OpenAPIParser {
 
 
   getOperationById(operationId: string): Partial<Oas.Operation> | undefined {
-     return this.operations[operationId];
+    return this.operations[operationId];
   }
 
   getOperations(): Record<string, Partial<Oas.Operation>> {

@@ -1,4 +1,4 @@
-import type { PaystackResponse, PaystackError } from "./types.js";
+import { PaystackResponse, PaystackError } from "./types";
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -14,7 +14,7 @@ class PaystackClient {
   private timeout: number;
 
   constructor(
-    secretKey: string, 
+    secretKey: string,
     baseUrl: string = PAYSTACK_BASE_URL,
     userAgent: string = USER_AGENT,
     timeout: number = 30000
@@ -22,7 +22,7 @@ class PaystackClient {
     if (!secretKey) {
       throw new Error("Paystack secret key is required");
     }
-    
+
     this.secretKey = secretKey;
     this.baseUrl = baseUrl;
     this.userAgent = userAgent;
@@ -37,13 +37,13 @@ class PaystackClient {
    */
 
   async makeRequest<T>(
-    method: string, 
-    endpoint: string, 
+    method: string,
+    endpoint: string,
     data?: any
   ): Promise<PaystackResponse<T>> {
-    
+
     let url = `${this.baseUrl}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${this.secretKey}`,
       'User-Agent': this.userAgent,
@@ -60,14 +60,14 @@ class PaystackClient {
       options.body = JSON.stringify(data);
     }
     options.headers = headers;
-    
+
     try {
       const response = await fetch(url, options);
-      
+
       // Parse response
       const responseText = await response.text();
       let responseData: PaystackResponse<T> | PaystackError;
-      
+
       try {
         responseData = JSON.parse(responseText);
       } catch (parseError) {
@@ -75,7 +75,7 @@ class PaystackClient {
       }
       return responseData as PaystackResponse<T>;
     } catch (error) {
-      
+
       if (error !== null && (error as any).name === 'NetworkError') {
         const timeoutError = new Error(`Request timeout after ${this.timeout} ms`);
         (timeoutError as any).statusCode = 408;
@@ -84,8 +84,8 @@ class PaystackClient {
       throw error;
     }
 
-    }
   }
+}
 export const paystackClient = new PaystackClient(
-  process.env.PAYSTACK_SECRET_KEY_TEST!
+  process.env.PAYSTACK_TEST_SECRET_KEY!
 );
