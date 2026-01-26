@@ -4,9 +4,10 @@ import path from "path";
 import * as z from "zod";
 import { OpenAPIParser } from "./openapi-parser";
 import { CreateMessageResultSchema } from "@modelcontextprotocol/sdk/types.js";
+import { paystackClient } from "./paystack-client";
 
-const PAYSTACK_BASE_URL = process.env.PAYSTACK_BASE_URL || "https://api.paystack.co";
-const USER_AGENT = process.env.USER_AGENT || "paystack-mcp/1.0";
+// const PAYSTACK_BASE_URL = process.env.PAYSTACK_BASE_URL || "https://api.paystack.co";
+// const USER_AGENT = process.env.USER_AGENT || "paystack-mcp/1.0";
 
 // Create server instance
 const server = new McpServer({
@@ -95,12 +96,19 @@ async function initializeServer() {
         console.log("Request received:", request.method);
         console.log("Request received:", request.path);
         console.log("Request received:", request.data);
+        
+        const response = await paystackClient.makeRequest(
+          request.method,
+          request.path,
+          request.data
+        )
+        console.log("response: ", response)
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify({ "message": "API request processed successfully" }, null, 2),
+              text: JSON.stringify(response, null, 2),
               mimeType: "application/json",
             },
           ]
@@ -246,6 +254,7 @@ async function main() {
   await server.connect(transport);
   console.error("Paystack MCP Server running on stdio...");
 }
+
 
 main().catch((error) => {
   console.error("Fatal error in main():", error);
