@@ -39,7 +39,7 @@ async function initializeServer() {
 
       try {
         const operation = openapi.getOperationById(operation_id.trim());
-        console.log("Operation: ", operation)
+        console.error("Operation: ", operation)
 
         if (!operation) {
           return {
@@ -93,16 +93,16 @@ async function initializeServer() {
     },
     async ({ request }) => {
       try {
-        console.log("Request received:", request.method);
-        console.log("Request received:", request.path);
-        console.log("Request received:", request.data);
+        console.error("Request received:", request.method);
+        console.error("Request received:", request.path);
+        console.error("Request received:", request.data);
         
         const response = await paystackClient.makeRequest(
           request.method,
           request.path,
           request.data
         )
-        console.log("response: ", response)
+        console.error("response: ", response)
 
         return {
           content: [
