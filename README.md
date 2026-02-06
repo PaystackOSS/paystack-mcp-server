@@ -7,17 +7,7 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that e
 
 ## Quick Start
 
-<!-- TODO: Update once published to npm -->
-
-```bash
-# Via npx (coming soon)
-npx paystack-mcp start
-
-# With environment configuration
-PAYSTACK_TEST_SECRET_KEY=sk_test_... npx paystack-mcp start
-```
-
-For now, clone and build locally:
+Clone the repo and build locally:
 
 ```bash
 git clone https://github.com/PaystackOSS/paystack-mcp-server.git
@@ -36,11 +26,9 @@ Then configure your MCP client to use the built server (see [Client Integration]
 
 ## Configuration Options
 
-| Environment Variable       | Purpose                                                | Default       |
-| -------------------------- | ------------------------------------------------------ | ------------- |
-| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key **(required)**           | —             |
-| `NODE_ENV`                 | Environment mode (`development`, `production`, `test`) | `development` |
-| `LOG_LEVEL`                | Logging verbosity (`debug`, `info`, `warn`, `error`)   | `info`        |
+| Environment Variable       | Purpose                                                |
+| -------------------------- | ------------------------------------------------------ | 
+| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key **(required)**           |
 
 > **Security note:** Only test keys (`sk_test_*`) are allowed. The server validates this at startup and will reject live keys.
 
@@ -81,25 +69,7 @@ If you've cloned and built the server locally:
 > where node
 > ```
 >
-> On getting the path, it can be used as the value of the MCP Server command. e.g., `command: "path/to/installation/bin/node"`
-
-### Using npm (coming soon)
-
-<!-- TODO: Update once published -->
-
-```json
-{
-  "mcpServers": {
-    "paystack": {
-      "command": "npx",
-      "args": ["paystack-mcp", "start"],
-      "env": {
-        "PAYSTACK_TEST_SECRET_KEY": "sk_test_..."
-      }
-    }
-  }
-}
-```
+> Once you have the path, use it as the value of the MCP Server command in the JSON configuration. e.g., `command: "path/to/installation/bin/node"`
 
 ### Where to add this configuration
 
@@ -121,6 +91,7 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 | Tool                     | Description                                                        |
 | ------------------------ | ------------------------------------------------------------------ |
 | `get_paystack_operation` | Fetch operation details (method, path, parameters) by operation ID |
+| `get_paystack_operation_guided` | Infers the operation ID from prompt |
 | `make_paystack_request`  | Execute a Paystack API request                                     |
 
 ### Available Resources
@@ -131,12 +102,27 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 
 ### Example
 
-When you ask your AI assistant something like _"Get me the last 5 transactions"_, here's what happens behind the scenes:
+When you ask your AI assistant something like _"Get me the last 5 transactions on my Paystact integration"_, here's what happens behind the scenes:
 
 1. The assistant calls `get_paystack_operation("transaction_list")` to look up the endpoint details
 2. It gets back the method (`GET`), path (`/transaction`), and available query parameters
 3. It then calls `make_paystack_request` with `{ method: "GET", path: "/transaction", data: { perPage: 5 } }`
 4. You get your transactions
+
+### Prompt recommendation
+
+To get the best results when using this MCP server, be specific in your prompts and always include "Paystack" in your requests. This helps the LLM quickly identify and use the appropriate Paystack tools.
+
+**Good prompts:**
+- "Initialize a Paystack transaction for 50000 NGN"
+- "Create a customer with email user@example.com on my Paystack account"
+- "How can I send money with the Paystack API?"
+
+**Less effective prompts:**
+- "List my transactions" (unclear which service to use)
+- "Charge a customer" (missing context about Paystack)
+
+Being explicit ensures the LLM narrows down to the right tool quickly and reduces ambiguity.
 
 ## Development
 
