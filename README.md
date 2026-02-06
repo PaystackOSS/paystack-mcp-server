@@ -1,37 +1,185 @@
 # Paystack MCP Server
 
-This project implements a server for Paystack's [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that enables AI assistants to interact with the full range of [Paystack APIs](https://paystack.com/docs/api/).
 
+> [!WARNING]
+> **Public Preview:** This MCP server is currently in public preview. We're seeking early feedback to improve the next iteration, so use cautiously and report any issues you encounter.
+
+## Quick Start
+
+<!-- TODO: Update once published to npm -->
+
+```bash
+# Via npx (coming soon)
+npx paystack-mcp start
+
+# With environment configuration
+PAYSTACK_TEST_SECRET_KEY=sk_test_... npx paystack-mcp start
+```
+
+For now, clone and build locally:
+
+```bash
+git clone https://github.com/PaystackOSS/paystack-mcp-server.git
+cd paystack-mcp-server
+npm install
+npm run build
+```
+
+Then configure your MCP client to use the built server (see [Client Integration](#client-integration)).
 
 ## Requirements
 
-- Node.js (v14+ recommended)
+- Node.js v18+
 - npm or yarn
+- A Paystack test secret key (starts with `sk_test_`)
 
-## Setup
+## Configuration Options
 
-1. Clone the repository:
-  ```
-  git clone https://github.com/yourusername/paystack-mcp-server.git
-  cd paystack-mcp
-  ```
+| Environment Variable       | Purpose                                                | Default       |
+| -------------------------- | ------------------------------------------------------ | ------------- |
+| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key **(required)**           | —             |
+| `NODE_ENV`                 | Environment mode (`development`, `production`, `test`) | `development` |
+| `LOG_LEVEL`                | Logging verbosity (`debug`, `info`, `warn`, `error`)   | `info`        |
 
-2. Install dependencies:
-  ```
-  npm install
-  ```
+> **Security note:** Only test keys (`sk_test_*`) are allowed. The server validates this at startup and will reject live keys.
 
-3. Configure environment variables:
-  - Copy `.env.example` to `.env` and update with your Paystack credentials and server settings.
+## Client Integration
 
-4. Start the server:
-  ```
-  npm start
-  ```
+The Paystack MCP Server works with any MCP-compatible client. Below is the standard configuration schema used by most clients (Claude Desktop, ChatGPT Desktop, Cursor, Windsurf, etc.).
+
+### Using a local build
+
+If you've cloned and built the server locally:
+
+```json
+{
+  "mcpServers": {
+    "paystack": {
+      "command": "node",
+      "args": ["/path/to/paystack-mcp-server/build/index.js"],
+      "env": {
+        "PAYSTACK_TEST_SECRET_KEY": "sk_test_..."
+      }
+    }
+  }
+}
+```
+
+> [!IMPORTANT]
+> When setting `command: "node"`, you should ensure you're using Node v18+. If you are using a package manager, you might need to get the path of your Node binary by running this command in your CLI:
+>
+> ### Linux and MacOS
+>
+> ```sh
+> which node
+> ```
+>
+> ### Windows
+>
+> ```sh
+> where node
+> ```
+>
+> On getting the path, it can be used as the value of the MCP Server command. e.g., `command: "path/to/installation/bin/node"`
+
+### Using npm (coming soon)
+
+<!-- TODO: Update once published -->
+
+```json
+{
+  "mcpServers": {
+    "paystack": {
+      "command": "npx",
+      "args": ["paystack-mcp", "start"],
+      "env": {
+        "PAYSTACK_TEST_SECRET_KEY": "sk_test_..."
+      }
+    }
+  }
+}
+```
+
+### Where to add this configuration
+
+| Client          | Config file location                              |
+| --------------- | ------------------------------------------------- |
+| VS Code         | `.vscode/mcp.json`                                |
+| Claude Desktop  | `claude_desktop_config.json`                      |
+| ChatGPT Desktop | MCP settings in app preferences                   |
+| Cursor          | `.cursor/mcp.json` or global MCP settings         |
+| Windsurf        | MCP configuration in settings                     |
+| Claude Code     | `~/.claude/mcp.json` or project-level `.mcp.json` |
+
+## How It Works
+
+The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by parsing Paystack's OpenAPI specification at runtime. Instead of hardcoding individual endpoints, the server dynamically discovers all available operations and makes them accessible through a small set of tools.
+
+### Available Tools
+
+| Tool                     | Description                                                        |
+| ------------------------ | ------------------------------------------------------------------ |
+| `get_paystack_operation` | Fetch operation details (method, path, parameters) by operation ID |
+| `make_paystack_request`  | Execute a Paystack API request                                     |
+
+### Available Resources
+
+| Resource                  | URI                          | Description                                              |
+| ------------------------- | ---------------------------- | -------------------------------------------------------- |
+| `paystack_operation_list` | `paystack://operations/list` | List all available Paystack operations and their details |
+
+### Example
+
+When you ask your AI assistant something like _"Get me the last 5 transactions"_, here's what happens behind the scenes:
+
+1. The assistant calls `get_paystack_operation("transaction_list")` to look up the endpoint details
+2. It gets back the method (`GET`), path (`/transaction`), and available query parameters
+3. It then calls `make_paystack_request` with `{ method: "GET", path: "/transaction", data: { perPage: 5 } }`
+4. You get your transactions
+
+## Development
+
+### Run locally (without building)
+
+For local development and testing, you can run the TypeScript source directly:
+
+```bash
+PAYSTACK_TEST_SECRET_KEY=sk_test_... npm run dev
+```
+
+### Run with MCP Inspector
+
+```bash
+npm run inspect
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Run tests
+
+```bash
+npm test
+```
+
+## Troubleshooting
+
+| Issue                            | Solution                                                           |
+| -------------------------------- | ------------------------------------------------------------------ |
+| Server exits silently at startup | Check that `PAYSTACK_TEST_SECRET_KEY` is set                       |
+| "Invalid key" error              | Key must start with `sk_test_` — live keys are not allowed         |
+| Tools not appearing in client    | Ensure the server is running and the client config path is correct |
+| Request timeouts                 | Check network connectivity to `api.paystack.co`                    |
 
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+See [contributing.md](contributing.md) for more details.
 
 ## License
 

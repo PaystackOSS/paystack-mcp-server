@@ -8,7 +8,7 @@ import { registerAllResources } from "./resources";
 async function createServer() {
   const server = new McpServer({
     name: "paystack",
-    version: "1.0.0",
+    version: "0.0.1",
   });
 
   const oasPath = path.join(__dirname, "./", "data/paystack.openapi.yaml");
