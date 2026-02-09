@@ -2,7 +2,7 @@ import { PaystackResponse, PaystackError } from "./types";
 import { paystackConfig } from "./config";
 
 const PAYSTACK_BASE_URL = paystackConfig.baseURL;
-const USER_AGENT = process.env.USER_AGENT || 'Paystack-MCP-Client';
+const USER_AGENT = process.env.USER_AGENT || 'Paystack-MCP-Server/0.0.1';
 
 class PaystackClient {
   private baseUrl: string;
