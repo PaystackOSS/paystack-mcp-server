@@ -102,7 +102,7 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 
 ### Example
 
-When you ask your AI assistant something like _"Get me the last 5 transactions on my Paystact integration"_, here's what happens behind the scenes:
+When you ask your AI assistant something like _"Get me the last 5 transactions on my Paystack integration"_, here's what happens behind the scenes:
 
 1. The assistant calls `get_paystack_operation("transaction_list")` to look up the endpoint details
 2. It gets back the method (`GET`), path (`/transaction`), and available query parameters
