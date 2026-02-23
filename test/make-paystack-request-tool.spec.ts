@@ -53,7 +53,7 @@ describe("MakePaystackRequestTool", () => {
       }
     });
 
-    it("should return isError: false (omitted) for successful responses", async () => {
+    it("should omit isError for successful responses", async () => {
       // Mock fetch to return valid JSON
       const originalFetch = global.fetch;
       const validJsonResponse = {

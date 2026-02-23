@@ -54,7 +54,7 @@ export function registerGetPaystackOperationTool(
           content: [
             {
               type: "text",
-              text: `Unable to retrieve operation: ${errorMessage}`,
+              text: `Error retrieving operation: ${errorMessage}`,
             },
           ],
           isError: true
