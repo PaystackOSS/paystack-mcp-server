@@ -34,7 +34,8 @@ export function registerGetPaystackOperationTool(
                 type: "text",
                 text: `Operation with ID ${operation_id} not found.`,
               },
-            ]
+            ],
+            isError: true
           }
         }
 
@@ -47,14 +48,16 @@ export function registerGetPaystackOperationTool(
             },
           ]
         }
-      } catch {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         return {
           content: [
             {
               type: "text",
-              text: `Operation with ID ${operation_id} not found.`,
+              text: `Error retrieving operation: ${errorMessage}`,
             },
-          ]
+          ],
+          isError: true
         }
       }
     }

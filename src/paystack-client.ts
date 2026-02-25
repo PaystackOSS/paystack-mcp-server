@@ -68,7 +68,15 @@ class PaystackClient {
       try {
         responseData = JSON.parse(responseText);
       } catch (parseError) {
-        throw new Error(`Invalid JSON response: ${responseText}`);
+        // Handle non-JSON responses gracefully (e.g., HTML error pages from API gateways)
+        const responseSnippet = responseText.length > 200 
+          ? responseText.substring(0, 200) + '...' 
+          : responseText;
+        const errorMessage = `Received non-JSON response from server (HTTP ${response.status}): ${responseSnippet}`;
+        const nonJsonError = new Error(errorMessage);
+        (nonJsonError as any).statusCode = response.status;
+        (nonJsonError as any).responseText = responseText;
+        throw nonJsonError;
       }
       return responseData as PaystackResponse<T>;
     } catch (error) {

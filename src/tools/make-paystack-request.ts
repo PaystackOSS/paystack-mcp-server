@@ -38,13 +38,23 @@ export function registerMakePaystackRequestTool(server: McpServer) {
           ]
         }
       } catch(error) {
+        // Follow MCP best practices: return isError flag instead of throwing
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const statusCode = (error as any).statusCode;
+        
+        let detailedMessage = `Unable to make request: ${errorMessage}`;
+        if (statusCode) {
+          detailedMessage = `Unable to make request (HTTP ${statusCode}): ${errorMessage}`;
+        }
+
         return {
           content: [
             {
               type: "text",
-              text: `Unable to make request. ${error}`,
+              text: detailedMessage,
             },
-          ]
+          ],
+          isError: true
         }
       }
     }
