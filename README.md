@@ -116,7 +116,6 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 | Tool                     | Description                                                        |
 | ------------------------ | ------------------------------------------------------------------ |
 | `get_paystack_operation` | Fetch operation details (method, path, parameters) by operation ID |
-| `get_paystack_operation_guided` | Infers the operation ID from prompt |
 | `make_paystack_request`  | Execute a Paystack API request                                     |
 
 ### Available Resources
