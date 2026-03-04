@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-import { startServer } from "./server";
 
 // Simple CLI argument parsing
 function parseApiKey(): string | undefined {
@@ -41,15 +39,12 @@ async function main() {
     process.exit(0);
   }
   
+  const { startServer } = await import("./server");
+
   // Parse API key from CLI
   const cliApiKey = parseApiKey();
   
-  // Validate API key format if provided via CLI
-  if (cliApiKey && !cliApiKey.startsWith('sk_test_')) {
-    console.error('Error: API key must start with "sk_test_". Only test keys are allowed.');
-    process.exit(1);
-  }
-  
+ 
   // Check if we have an API key from CLI or environment
   if (!cliApiKey && !process.env.PAYSTACK_TEST_SECRET_KEY) {
     console.error('Error: Paystack API key required.');

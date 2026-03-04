@@ -29,9 +29,6 @@ export function getConfig(cliApiKey?: string) {
   };
 }
 
-// Export validated configuration (for backward compatibility, will use env var)
-export const config = getConfig();
-
 // Paystack API configuration factory
 export function createPaystackConfig(cliApiKey?: string) {
   const cfg = getConfig(cliApiKey);
@@ -41,6 +38,3 @@ export function createPaystackConfig(cliApiKey?: string) {
     timeout: 30000, // 30 seconds
   } as const;
 }
-
-// Default paystack config (for backward compatibility)
-export const paystackConfig = createPaystackConfig();

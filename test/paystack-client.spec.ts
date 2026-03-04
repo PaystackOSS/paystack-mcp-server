@@ -1,7 +1,10 @@
 import assert from "node:assert";
-import { paystackClient } from "../src/paystack-client.js";
+import { createPaystackClient } from "../src/paystack-client.js";
 
 describe("PaystackClient", () => {
+  // Use a test API key for the test client
+  const paystackClient = createPaystackClient("sk_test_1234567890abcdef1234567890abcdef12345678");
+  
   describe("makeRequest - Non-JSON Response Handling", () => {
     it("should throw a descriptive error for HTML error responses", async () => {
       // This test validates that non-JSON responses (like HTML error pages)

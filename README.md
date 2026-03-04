@@ -46,7 +46,22 @@ You can provide your API key in two ways:
 
 The Paystack MCP Server works with any MCP-compatible client. Below is the standard configuration schema used by most clients (Claude Desktop, ChatGPT Desktop, Cursor, Windsurf, etc.).
 
-### Using npm (recommended)\n\nFor npm-installed server:\n\n```json\n{\n  \"mcpServers\": {\n    \"paystack\": {\n      \"command\": \"npx\",\n      \"args\": [\"@paystack/mcp-server\", \"--api-key\", \"sk_test_...\"]\n    }\n  }\n}\n```\n\n### Using a local build
+### Using npm (recommended)
+
+For npm-installed server:
+
+```json
+{
+  "mcpServers": {
+    "paystack": {
+      "command": "npx",
+      "args": ["@paystack/mcp-server", "--api-key", "sk_test_..."]
+    }
+  }
+}
+```
+
+### Using a local build
 
 If you've cloned and built the server locally:
 

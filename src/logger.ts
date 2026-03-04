@@ -1,4 +1,4 @@
-import { config } from './config.js';
+import { getConfig } from './config.js';
 // Define log levels
 export enum LogLevel {
   DEBUG = 'debug',
@@ -92,8 +92,8 @@ function redactSensitiveData(obj: any): any {
 class Logger {
   private currentLogLevel: LogLevel;
 
-  constructor() {
-    this.currentLogLevel = config.LOG_LEVEL as LogLevel;
+  constructor(logLevel?: LogLevel) {
+    this.currentLogLevel = logLevel || LogLevel.INFO;
   }
 
   private shouldLog(level: LogLevel): boolean {
@@ -175,4 +175,13 @@ class Logger {
   }
 }
 
+/**
+ * Create a logger instance with configuration
+ */
+export function createLogger(cliApiKey?: string): Logger {
+  const config = getConfig(cliApiKey);
+  return new Logger(config.LOG_LEVEL as LogLevel);
+}
+
+// Default logger instance for backward compatibility (uses environment variable)
 export const logger = new Logger();
