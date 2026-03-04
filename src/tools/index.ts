@@ -5,8 +5,9 @@ import { registerMakePaystackRequestTool } from "./make-paystack-request";
 
 export function registerAllTools(
   server: McpServer,
-  openapi: OpenAPIParser
+  openapi: OpenAPIParser,
+  cliApiKey?: string
 ) {
   registerGetPaystackOperationTool(server, openapi);
-  registerMakePaystackRequestTool(server);
+  registerMakePaystackRequestTool(server, cliApiKey);
 }

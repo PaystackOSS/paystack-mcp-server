@@ -1,41 +1,46 @@
 import dotenv from 'dotenv';
-import { z } from 'zod';
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({quiet: true});
 
-// Define schema for required environment variables
-const envSchema = z.object({
-  PAYSTACK_TEST_SECRET_KEY: z.string().min(30, 'PAYSTACK_TEST_SECRET_KEY is required').refine(val => val.startsWith('sk_test_'), {
-    message: 'PAYSTACK_TEST_SECRET_KEY must begin with "sk_test_. No live keys allowed."',
-  }),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-});
-
-// Validate environment variables
-function validateEnv() {
-  try {
-    return envSchema.parse({
-      PAYSTACK_TEST_SECRET_KEY: process.env.PAYSTACK_TEST_SECRET_KEY,
-      NODE_ENV: process.env.NODE_ENV || 'development',
-      LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      // Environment validation failed - exit silently
-      process.exit(1);
-    }
-    throw error;
+// Get configuration with optional CLI API key
+export function getConfig(cliApiKey?: string) {
+  const apiKey = cliApiKey || process.env.PAYSTACK_TEST_SECRET_KEY;
+  
+  if (!apiKey) {
+    console.error('Error: PAYSTACK_TEST_SECRET_KEY is required');
+    process.exit(1);
   }
+  
+  if (!apiKey.startsWith('sk_test_')) {
+    console.error('Error: PAYSTACK_TEST_SECRET_KEY must begin with "sk_test_". No live keys allowed.');
+    process.exit(1);
+  }
+  
+  if (apiKey.length < 30) {
+    console.error('Error: PAYSTACK_TEST_SECRET_KEY appears to be too short');
+    process.exit(1);
+  }
+  
+  return {
+    PAYSTACK_TEST_SECRET_KEY: apiKey,
+    NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+    LOG_LEVEL: (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info',
+  };
 }
 
-// Export validated configuration
-export const config = validateEnv();
+// Export validated configuration (for backward compatibility, will use env var)
+export const config = getConfig();
 
-// Paystack API configuration
-export const paystackConfig = {
-  baseURL: 'https://api.paystack.co',
-  secretKey: config.PAYSTACK_TEST_SECRET_KEY,
-  timeout: 30000, // 30 seconds
-} as const;
+// Paystack API configuration factory
+export function createPaystackConfig(cliApiKey?: string) {
+  const cfg = getConfig(cliApiKey);
+  return {
+    baseURL: 'https://api.paystack.co',
+    secretKey: cfg.PAYSTACK_TEST_SECRET_KEY,
+    timeout: 30000, // 30 seconds
+  } as const;
+}
+
+// Default paystack config (for backward compatibility)
+export const paystackConfig = createPaystackConfig();

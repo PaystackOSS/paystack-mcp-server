@@ -7,7 +7,13 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that e
 
 ## Quick Start
 
-Clone the repo and build locally:
+Install and run via npm (recommended):
+
+```bash
+npx @paystack/mcp-server --api-key sk_test_your_key_here
+```
+
+Or for local development, clone and build:
 
 ```bash
 git clone https://github.com/PaystackOSS/paystack-mcp-server.git
@@ -16,7 +22,7 @@ npm install
 npm run build
 ```
 
-Then configure your MCP client to use the built server (see [Client Integration](#client-integration)).
+Then configure your MCP client to use the server (see [Client Integration](#client-integration)).
 
 ## Requirements
 
@@ -28,7 +34,11 @@ Then configure your MCP client to use the built server (see [Client Integration]
 
 | Environment Variable       | Purpose                                                |
 | -------------------------- | ------------------------------------------------------ | 
-| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key **(required)**           |
+| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key (fallback if no CLI arg) |
+
+You can provide your API key in two ways:
+1. **CLI argument (recommended):** `--api-key sk_test_...`
+2. **Environment variable:** Set `PAYSTACK_TEST_SECRET_KEY`
 
 > **Security note:** Only test keys (`sk_test_*`) are allowed. The server validates this at startup and will reject live keys.
 
@@ -36,7 +46,7 @@ Then configure your MCP client to use the built server (see [Client Integration]
 
 The Paystack MCP Server works with any MCP-compatible client. Below is the standard configuration schema used by most clients (Claude Desktop, ChatGPT Desktop, Cursor, Windsurf, etc.).
 
-### Using a local build
+### Using npm (recommended)\n\nFor npm-installed server:\n\n```json\n{\n  \"mcpServers\": {\n    \"paystack\": {\n      \"command\": \"npx\",\n      \"args\": [\"@paystack/mcp-server\", \"--api-key\", \"sk_test_...\"]\n    }\n  }\n}\n```\n\n### Using a local build
 
 If you've cloned and built the server locally:
 

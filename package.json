@@ -1,9 +1,14 @@
 {
-  "name": "paystack-mcp",
+  "name": "@paystack/mcp-server",
   "version": "0.0.1",
-  "description": "",
+  "description": "Model Context Protocol (MCP) server for Paystack API integration",
+  "mcpName": "io.github.PaystackOSS/paystack",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PaystackOSS/paystack-mcp-server.git"
+  },
   "bin": {
-    "paystack": "./build/index.js"
+    "paystack-mcp": "./build/index.js"
   },
   "scripts": {
     "build": "tsc && cp -r src/data build/",
@@ -15,14 +20,20 @@
   "files": [
     "build"
   ],
-  "keywords": [],
+  "keywords": [
+    "paystack",
+    "mcp",
+    "model-context-protocol",
+    "api",
+    "payment",
+    "integration"
+  ],
   "author": "Andrew-Paystack",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/inspector": "^0.18.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "dotenv": "^17.2.3",
-    "zod": "^4.3.6"
+    "dotenv": "^17.2.3"  
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",

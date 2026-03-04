@@ -1,8 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod";
-import { paystackClient } from "../paystack-client";
+import { PaystackClient } from "../paystack-client";
+import { createPaystackConfig } from "../config";
 
-export function registerMakePaystackRequestTool(server: McpServer) {
+export function registerMakePaystackRequestTool(server: McpServer, cliApiKey?: string) {
+  // Create PaystackClient with CLI API key or fallback to environment
+  const config = createPaystackConfig(cliApiKey);
+  const paystackClient = new PaystackClient(config.secretKey);
+  
   server.registerTool(
     "make_paystack_request",
     {
