@@ -17,9 +17,7 @@
     "inspect": "set DANGEROUSLY_OMIT_AUTH=true && CLIENT_PORT=8090 SERVER_PORT=9000 npx @modelcontextprotocol/inspector npm run dev",
     "test": "mocha"
   },
-  "files": [
-    "build"
-  ],
+  "files": [ "build", "README.md" ],
   "keywords": [
     "paystack",
     "mcp",
