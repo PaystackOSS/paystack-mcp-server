@@ -1,13 +1,13 @@
-name: Publish Package to npmjs
+name: Publish MCP to npmjs
 on:
   release:
     types: [published]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v5
       
@@ -21,12 +21,12 @@ jobs:
         run: npm ci
       
       - name: Sync version with release tag
-        # Updates package.json to the release tag version (e.g., v1.2.3)
         run: npm version ${{ github.event.release.tag_name }} --no-git-tag-version
 
       - name: Build package
         run: npm run build
 
       - name: Publish to npmjs
-        # No NODE_AUTH_TOKEN needed; setup-node handles OIDC auth
         run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
