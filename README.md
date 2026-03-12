@@ -7,7 +7,13 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that e
 
 ## Quick Start
 
-Clone the repo and build locally:
+Install and run via npm (recommended):
+
+```bash
+npx @paystack/mcp-server --api-key sk_test_your_key_here
+```
+
+Or for local development, clone and build:
 
 ```bash
 git clone https://github.com/PaystackOSS/paystack-mcp-server.git
@@ -16,7 +22,7 @@ npm install
 npm run build
 ```
 
-Then configure your MCP client to use the built server (see [Client Integration](#client-integration)).
+Then configure your MCP client to use the server (see [Client Integration](#client-integration)).
 
 ## Requirements
 
@@ -28,13 +34,32 @@ Then configure your MCP client to use the built server (see [Client Integration]
 
 | Environment Variable       | Purpose                                                |
 | -------------------------- | ------------------------------------------------------ | 
-| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key **(required)**           |
+| `PAYSTACK_TEST_SECRET_KEY` | Your Paystack test secret key (fallback if no CLI arg) |
+
+You can provide your API key in two ways:
+1. **CLI argument (recommended):** `--api-key sk_test_...`
+2. **Environment variable:** Set `PAYSTACK_TEST_SECRET_KEY`
 
 > **Security note:** Only test keys (`sk_test_*`) are allowed. The server validates this at startup and will reject live keys.
 
 ## Client Integration
 
 The Paystack MCP Server works with any MCP-compatible client. Below is the standard configuration schema used by most clients (Claude Desktop, ChatGPT Desktop, Cursor, Windsurf, etc.).
+
+### Using npm (recommended)
+
+For npm-installed server:
+
+```json
+{
+  "mcpServers": {
+    "paystack": {
+      "command": "npx",
+      "args": ["@paystack/mcp-server", "--api-key", "sk_test_..."]
+    }
+  }
+}
+```
 
 ### Using a local build
 
@@ -91,7 +116,6 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 | Tool                     | Description                                                        |
 | ------------------------ | ------------------------------------------------------------------ |
 | `get_paystack_operation` | Fetch operation details (method, path, parameters) by operation ID |
-| `get_paystack_operation_guided` | Infers the operation ID from prompt |
 | `make_paystack_request`  | Execute a Paystack API request                                     |
 
 ### Available Resources

@@ -5,7 +5,7 @@ import { OpenAPIParser } from "./openapi-parser";
 import { registerAllTools } from "./tools";
 import { registerAllResources } from "./resources";
 
-async function createServer() {
+async function createServer(cliApiKey?: string) {
   const server = new McpServer({
     name: "paystack",
     version: "0.0.1",
@@ -16,14 +16,14 @@ async function createServer() {
 
   await openapi.parse();
 
-  registerAllTools(server, openapi);
+  registerAllTools(server, openapi, cliApiKey);
   registerAllResources(server, openapi);
 
   return server;
 }
 
-export async function startServer() {
-  const server = await createServer();
+export async function startServer(cliApiKey?: string) {
+  const server = await createServer(cliApiKey);
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Paystack MCP Server running on stdio...");

@@ -17,7 +17,8 @@ describe("MakePaystackRequestTool", () => {
         }
       } as any;
 
-      registerMakePaystackRequestTool(server);
+      // Pass a test API key to avoid environment variable requirement  
+      registerMakePaystackRequestTool(server, "sk_test_1234567890abcdef1234567890abcdef12345678");
     });
 
     it("should return isError: true for non-JSON responses", async () => {
@@ -142,6 +143,54 @@ describe("MakePaystackRequestTool", () => {
         assert.ok(result.content[0].text.includes("Unable to make request"));
       } finally {
         global.fetch = originalFetch;
+      }
+    });
+  });
+  describe("Missing API Key Validation", () => {
+    let server: McpServer;
+    let originalExit: typeof process.exit;
+    let exitCode: number | undefined;
+    let consoleErrors: string[] = [];
+    let originalConsoleError: typeof console.error;
+
+    beforeEach(() => {
+      // Mock process.exit to capture exit calls
+      exitCode = undefined;
+      originalExit = process.exit;
+      process.exit = ((code?: number) => {
+        exitCode = code || 0;
+        throw new Error(`Process would exit with code ${exitCode}`);
+      }) as any;
+
+      // Mock console.error to capture error messages
+      consoleErrors = [];
+      originalConsoleError = console.error;
+      console.error = (...args: any[]) => {
+        consoleErrors.push(args.join(' '));
+      };
+
+      server = {
+        registerTool: (name: string, config: any, handler: any) => { }
+      } as any;
+    });
+
+    afterEach(() => {
+      process.exit = originalExit;
+      console.error = originalConsoleError;
+      delete process.env.PAYSTACK_TEST_SECRET_KEY;
+    });
+
+    it("should fail when no API key provided via CLI or environment", () => {
+      // Ensure no environment variable is set
+      delete process.env.PAYSTACK_TEST_SECRET_KEY;
+
+      try {
+        registerMakePaystackRequestTool(server); // No cliApiKey parameter
+        assert.fail("Expected registerMakePaystackRequestTool to throw an error");
+      } catch (error: any) {
+        assert.ok(error.message.includes("Process would exit with code 1"));
+        assert.strictEqual(exitCode, 1);
+        assert.ok(consoleErrors.some(msg => msg.includes("PAYSTACK_TEST_SECRET_KEY is required")));
       }
     });
   });
