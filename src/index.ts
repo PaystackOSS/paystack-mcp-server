@@ -1,4 +1,4 @@
-
+#!/usr/bin/env node
 // Simple CLI argument parsing
 function parseApiKey(): string | undefined {
   const args = process.argv;
@@ -38,7 +38,7 @@ async function main() {
     showHelp();
     process.exit(0);
   }
-  
+
   const { startServer } = await import("./server");
 
   // Parse API key from CLI

@@ -1,6 +1,6 @@
 {
   "name": "@paystack/mcp-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Model Context Protocol (MCP) server for Paystack API integration",
   "mcpName": "io.github.PaystackOSS/paystack",
   "repository": {
@@ -13,6 +13,7 @@
   "scripts": {
     "build": "tsc && cp -r src/data build/",
     "build:watch": "tsc --watch",
+    "prepack": "npm run build",
     "dev": "tsx src/index.ts",
     "inspect": "set DANGEROUSLY_OMIT_AUTH=true && CLIENT_PORT=8090 SERVER_PORT=9000 npx @modelcontextprotocol/inspector npm run dev",
     "test": "mocha"
