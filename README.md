@@ -123,6 +123,7 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 | Resource                  | URI                          | Description                                              |
 | ------------------------- | ---------------------------- | -------------------------------------------------------- |
 | `paystack_operation_list` | `paystack://operations/list` | List all available Paystack operations and their details |
+| `paystack_skill`          | `paystack://skill`           | Paystack developer knowledge: docs index, code snippet links, payment channel reference |
 
 ### Example
 
@@ -135,12 +136,13 @@ When you ask your AI assistant something like _"Get me the last 5 transactions o
 
 ### Prompt recommendation
 
-To get the best results when using this MCP server, be specific in your prompts and always include "Paystack" in your requests. This helps the LLM quickly identify and use the appropriate Paystack tools.
+To get the best results when using this MCP server, be specific in your prompts and always include "Paystack" in your requests. The server provides built-in instructions and a knowledge resource (`paystack://skill`) that help the AI assistant find the right documentation, code snippets, and API details.
 
 **Good prompts:**
 - "Initialize a Paystack transaction for 50000 NGN"
 - "Create a customer with email user@example.com on my Paystack account"
 - "How can I send money with the Paystack API?"
+- "Show me a cURL example for verifying a Paystack transaction"
 
 **Less effective prompts:**
 - "List my transactions" (unclear which service to use)
