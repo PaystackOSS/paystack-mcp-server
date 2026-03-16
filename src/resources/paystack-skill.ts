@@ -5,7 +5,7 @@ import * as path from "node:path";
 // Load skill content from external markdown file
 let SKILL_CONTENT: string;
 try {
-  const skillPath = path.join(__dirname, "./", "data/paystack-skill.md");
+  const skillPath = path.join(__dirname, "..", "data", "paystack-skill.md");
   SKILL_CONTENT = fs.readFileSync(skillPath, "utf-8");
 } catch (error) {
   console.error("Error loading paystack-skill.md:", error);
