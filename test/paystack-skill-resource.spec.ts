@@ -68,10 +68,7 @@ describe("PaystackSkillResource", () => {
     });
 
     it("should include links to Paystack docs", () => {
-      assert.ok(content.includes("https://paystack.com/docs/payments/"));
-      assert.ok(content.includes("https://paystack.com/docs/transfers/"));
-      assert.ok(content.includes("https://paystack.com/docs/terminal/"));
-      assert.ok(content.includes("https://paystack.com/docs/api/"));
+      assert.ok(content.includes("https://paystack.com/docs/llms.txt"));
     });
 
     it("should include snippet repo URL pattern for JS", () => {

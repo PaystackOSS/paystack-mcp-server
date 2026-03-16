@@ -1,6 +1,6 @@
 # Paystack Developer Knowledge
 
-## Documentation
+## Documentation Index
 
 For integration guides, best practices, and detailed documentation, use the Paystack LLM-friendly docs index:
 https://paystack.com/docs/llms.txt
