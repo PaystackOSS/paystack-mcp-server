@@ -22,7 +22,6 @@ const SERVER_INSTRUCTIONS = `You are connected to the Paystack MCP Server, which
 - This server only accepts test keys (sk_test_*). Never use live keys.
 - Always verify transactions server-side before delivering value
 - Validate webhook signatures using your secret key before processing events
-- Supported currencies: NGN (Nigeria), GHS (Ghana), ZAR (South Africa), KES (Kenya), USD (International)
 
 ## Workflow
 Always call "get_paystack_operation" to get endpoint details before calling "make_paystack_request". Do not guess endpoint paths, methods, or parameter names.

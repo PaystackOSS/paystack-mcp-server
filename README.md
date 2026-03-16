@@ -123,7 +123,6 @@ The Paystack MCP Server exposes the **entire Paystack API** to AI assistants by 
 | Resource                  | URI                          | Description                                              |
 | ------------------------- | ---------------------------- | -------------------------------------------------------- |
 | `paystack_operation_list` | `paystack://operations/list` | List all available Paystack operations and their details |
-| `paystack_skill`          | `paystack://skill`           | Paystack developer knowledge: docs index, code snippet links, payment channel reference |
 
 ### Example
 
