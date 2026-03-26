@@ -4,6 +4,7 @@ import path from "path";
 import { OpenAPIParser } from "./openapi-parser";
 import { registerAllTools } from "./tools";
 import { registerAllResources } from "./resources";
+import { loadSkillContent } from "./skill-loader";
 
 const SERVER_INSTRUCTIONS = `You are connected to the Paystack MCP Server, which provides access to the full Paystack API.
 
@@ -13,13 +14,14 @@ const SERVER_INSTRUCTIONS = `You are connected to the Paystack MCP Server, which
    - "get_paystack_operation" tool: get endpoint details (method, path, parameters, request body)
    - "make_paystack_request" tool: execute API requests
 2. For integration guides, best practices, and deeper context, refer to Paystack documentation at https://paystack.com/docs/llms.txt
-3. For code snippets in JS/TS or cURL, refer to the "paystack_skill" resource for links
+3. For code snippets in JS/TS or cURL, refer to the "paystack_skill" resource
 4. If information is not available from the above sources, say so clearly — do not invent Paystack-specific details
 
 ## Critical Accuracy Rules
 - All amounts must be in the smallest currency unit: kobo (NGN), pesewas (GHS), cents (ZAR/KES/USD). XOF has no subunit but amounts must still be multiplied by 100.
 - API requests require authentication: secret keys (server-side) or public keys (client-side only for Popup/Mobile SDKs)
 - This server only accepts test keys (sk_test_*). Never use live keys.
+- Prefer to use Webhooks for event-driven flows based on your paystack-skills file. 
 - Always verify transactions server-side before delivering value
 - Validate webhook signatures using your secret key before processing events
 
@@ -40,8 +42,11 @@ async function createServer(cliApiKey?: string) {
 
   await openapi.parse();
 
+  const bundledSkillPath = path.join(__dirname, "data", "paystack-skill.md");
+  const skillContent = await loadSkillContent(bundledSkillPath);
+
   registerAllTools(server, openapi, cliApiKey);
-  registerAllResources(server, openapi);
+  registerAllResources(server, openapi, skillContent);
 
   return server;
 }

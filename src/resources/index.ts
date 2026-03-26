@@ -5,8 +5,9 @@ import { registerSkillResource } from "./paystack-skill";
 
 export function registerAllResources(
   server: McpServer,
-  openapi: OpenAPIParser
+  openapi: OpenAPIParser,
+  skillContent: string
 ) {
   registerOperationListResource(server, openapi);
-  registerSkillResource(server);
+  registerSkillResource(server, skillContent);
 }

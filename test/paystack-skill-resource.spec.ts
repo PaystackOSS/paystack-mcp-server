@@ -1,6 +1,13 @@
 import assert from "node:assert";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerSkillResource } from "../src/resources/paystack-skill.js";
+
+const SKILL_CONTENT = fs.readFileSync(
+  path.join(__dirname, "..", "src", "data", "paystack-skill.md"),
+  "utf-8"
+);
 
 describe("PaystackSkillResource", () => {
   let resourceHandler: any;
@@ -18,7 +25,7 @@ describe("PaystackSkillResource", () => {
       }
     } as any;
 
-    registerSkillResource(server);
+    registerSkillResource(server, SKILL_CONTENT);
   });
 
   describe("Registration", () => {

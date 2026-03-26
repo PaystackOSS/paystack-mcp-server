@@ -1,18 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import * as fs from "node:fs";
-import * as path from "node:path";
 
-// Load skill content from external markdown file
-let SKILL_CONTENT: string;
-try {
-  const skillPath = path.join(__dirname, "..", "data", "paystack-skill.md");
-  SKILL_CONTENT = fs.readFileSync(skillPath, "utf-8");
-} catch (error) {
-  console.error("Error loading paystack-skill.md:", error);
-  SKILL_CONTENT = "# Paystack Developer Knowledge\n\nError: Could not load skill content from file.";
-}
-
-export function registerSkillResource(server: McpServer) {
+export function registerSkillResource(server: McpServer, skillContent: string) {
   server.registerResource(
     "paystack_skill",
     "paystack://skill",
@@ -27,7 +15,7 @@ export function registerSkillResource(server: McpServer) {
         contents: [
           {
             uri: uri.href,
-            text: SKILL_CONTENT,
+            text: skillContent,
             mimeType: "text/markdown",
           },
         ],
