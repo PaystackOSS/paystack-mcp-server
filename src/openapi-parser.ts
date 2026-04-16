@@ -16,56 +16,46 @@ export class OpenAPIParser {
 
   async parse() {
     try {
-      const api = (await SwaggerParser.default.parse(
-        this.specURL
-      )) as OpenAPIV3.Document;
+      const api = (await SwaggerParser.default.parse(this.specURL)) as OpenAPIV3.Document;
       this.buildOperationsMap(api);
     } catch (error) {
       console.error('Error parsing OpenAPI spec:', error);
     }
   }
 
-  private parseModel(
-    name: string,
-    models: OpenAPIV3.ComponentsObject,
-  ): Oas.Body {
-    const { schemas } = models!
+  private parseModel(name: string, models: OpenAPIV3.ComponentsObject): Oas.Body {
+    const { schemas } = models!;
     const model = schemas![name] as OpenAPIV3.SchemaObject;
     const body = {} as Oas.Body;
-    body.properties = []
+    body.properties = [];
 
     if (model.properties === undefined) {
-      body.properties.push({ ...model as Oas.BodyParam })
-      return body
+      body.properties.push({ ...(model as Oas.BodyParam) });
+      return body;
     }
 
     const { properties, required, example } = model;
 
     Object.entries(properties).forEach(([key, property]) => {
-      let bodyParam = {} as Oas.BodyParam
+      let bodyParam = {} as Oas.BodyParam;
 
-      if ("$ref" in property) {
-        const name = property.$ref.split("/").pop()!;
+      if ('$ref' in property) {
+        const name = property.$ref.split('/').pop()!;
         // TODO: Consider parsing inner examples if available
         // Maybe just merge to the top example
-        const { properties: innerParams } = this.parseModel(name, models)
+        const { properties: innerParams } = this.parseModel(name, models);
 
         bodyParam = {
-          ...innerParams[0]
-        }
-        bodyParam.name = key
+          ...innerParams[0],
+        };
+        bodyParam.name = key;
       } else {
-        const tempProperty = property as OpenAPIV3.SchemaObject
+        const tempProperty = property as OpenAPIV3.SchemaObject;
         bodyParam = {
           name: key,
           type: tempProperty.type!,
-          description: tempProperty.description ?? "",
-          required:
-            required === undefined
-              ? false
-              : required.includes(key)
-                ? true
-                : false,
+          description: tempProperty.description ?? '',
+          required: required === undefined ? false : required.includes(key) ? true : false,
         };
       }
 
@@ -73,7 +63,7 @@ export class OpenAPIParser {
     });
 
     if (example !== undefined) {
-      body.examples = example as Map<string, any>
+      body.examples = example as Map<string, any>;
     }
     return body;
   }
@@ -82,81 +72,78 @@ export class OpenAPIParser {
     schema: Oas.PropertySchema,
     models: OpenAPIV3.ComponentsObject,
   ): Oas.Body {
-
-    if ("$ref" in schema) {
-      const name = schema.$ref.split("/").pop()!;
+    if ('$ref' in schema) {
+      const name = schema.$ref.split('/').pop()!;
       const body = this.parseModel(name, models);
 
       return body;
     }
-    const body = {} as Oas.Body
-    body.properties = []
+    const body = {} as Oas.Body;
+    body.properties = [];
 
-    if ("type" in schema && schema.type === "array") {
+    if ('type' in schema && schema.type === 'array') {
       const schemaPath = schema.items as OpenAPIV3.ReferenceObject;
-      const name = schemaPath.$ref.split("/").pop()
+      const name = schemaPath.$ref.split('/').pop();
 
-      const { properties, examples } = this.parseModel(name!, models)
+      const { properties, examples } = this.parseModel(name!, models);
       const parent = {
-        name: "",
+        name: '',
         type: 'array',
         required: true,
-        description: schema.description ?? "",
-        children: properties
-      } as Oas.BodyParam
+        description: schema.description ?? '',
+        children: properties,
+      } as Oas.BodyParam;
 
-      body.properties.push(parent)
-      body.examples = examples
+      body.properties.push(parent);
+      body.examples = examples;
 
       return body;
     }
 
-    if ("type" in schema && schema.type === "object") {
+    if ('type' in schema && schema.type === 'object') {
       const [key, path] = Object.entries(schema.properties!)[0];
-      const schemaPath = path as OpenAPIV3.ReferenceObject
-      const name = schemaPath.$ref.split("/").pop()!;
-      const { properties, examples } = this.parseModel(name, models)
+      const schemaPath = path as OpenAPIV3.ReferenceObject;
+      const name = schemaPath.$ref.split('/').pop()!;
+      const { properties, examples } = this.parseModel(name, models);
       const parent = {
         name: key,
         type: 'object',
         required: schema.required ?? false,
-        description: schema.description ?? "",
-        children: properties
-      } as Oas.BodyParam
+        description: schema.description ?? '',
+        children: properties,
+      } as Oas.BodyParam;
 
-      body.properties.push(parent)
-      body.examples = examples
+      body.properties.push(parent);
+      body.examples = examples;
 
       return body;
     }
 
-    if ("allOf" in schema) {
+    if ('allOf' in schema) {
       // An object is being used here because the OAS examples are actually of
       // the object type even though they're typed as Map<string, any>
       // Also, map isn't being parsed properly when writing to file
-      let mergedExamples = {}
+      let mergedExamples = {};
 
       schema.allOf?.forEach((schema) => {
-        const { properties, examples } = this.parseRequestBody(schema, models)
-        body.properties.push(...properties)
+        const { properties, examples } = this.parseRequestBody(schema, models);
+        body.properties.push(...properties);
 
         if (examples !== undefined) {
-          mergedExamples = { ...mergedExamples, ...examples }
+          mergedExamples = { ...mergedExamples, ...examples };
         }
       });
 
-      body.examples = mergedExamples as Map<string, any>
+      body.examples = mergedExamples as Map<string, any>;
 
-      return body
+      return body;
     }
 
     return {} as Oas.Body;
   }
 
-  private parseParameters(
-    parameters: OpenAPIV3.ParameterObject[]
-  ): Oas.RequestParameter {
-    let result: Oas.RequestParameter = {
+  private parseParameters(parameters: OpenAPIV3.ParameterObject[]): Oas.RequestParameter {
+    const result: Oas.RequestParameter = {
       // header: [],
       pathParameter: [],
       queryParameter: [],
@@ -165,17 +152,17 @@ export class OpenAPIParser {
     parameters.forEach((parameter) => {
       const endpointParam: Oas.EndpointParam = {
         name: parameter.name,
-        description: parameter.description ?? "",
+        description: parameter.description ?? '',
         required: parameter.required ?? false,
         schema: parameter.schema as OpenAPIV3.SchemaObject,
         example: parameter.example,
       };
 
-      if (parameter.in === "query") {
+      if (parameter.in === 'query') {
         result.queryParameter.push(endpointParam);
       }
 
-      if (parameter.in === "path") {
+      if (parameter.in === 'path') {
         result.pathParameter.push(endpointParam);
       }
     });
@@ -214,30 +201,30 @@ export class OpenAPIParser {
 
         if (requestBody !== undefined) {
           const { content } = requestBody as OpenAPIV3.RequestBodyObject;
-          const mediaType = content["application/json"];
+          const mediaType = content['application/json'];
 
           const body =
             mediaType.schema === undefined
-              ? {} as Oas.Body
+              ? ({} as Oas.Body)
               : this.parseRequestBody(mediaType.schema, components!);
 
-          partialOperation.requestBody = body
+          partialOperation.requestBody = body;
         }
 
         if (parameters && parameters !== null && parameters.length > 0) {
-          const { pathParameter, queryParameter } =
-            this.parseParameters(parameters as OpenAPIV3.ParameterObject[]);
+          const { pathParameter, queryParameter } = this.parseParameters(
+            parameters as OpenAPIV3.ParameterObject[],
+          );
 
           // partialOperation.header = header;
           partialOperation.pathParameter = pathParameter;
           partialOperation.queryParameter = queryParameter;
         }
 
-        this.operations[operationId!] = partialOperation
+        this.operations[operationId!] = partialOperation;
       });
     });
   }
-
 
   getOperationById(operationId: string): Partial<Oas.Operation> | undefined {
     return this.operations[operationId];

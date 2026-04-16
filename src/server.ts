@@ -1,10 +1,10 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import path from "path";
-import { OpenAPIParser } from "./openapi-parser";
-import { registerAllTools } from "./tools";
-import { registerAllResources } from "./resources";
-import { loadSkillContent } from "./skill-loader";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import path from 'path';
+import { OpenAPIParser } from './openapi-parser';
+import { registerAllTools } from './tools';
+import { registerAllResources } from './resources';
+import { loadSkillContent } from './skill-loader';
 
 const SERVER_INSTRUCTIONS = `You are connected to the Paystack MCP Server, which provides access to the full Paystack API.
 
@@ -30,19 +30,22 @@ Always call "get_paystack_operation" to get endpoint details before calling "mak
 `;
 
 async function createServer(cliApiKey?: string) {
-  const server = new McpServer({
-    name: "paystack",
-    version: "0.0.1",
-  }, {
-    instructions: SERVER_INSTRUCTIONS,
-  });
+  const server = new McpServer(
+    {
+      name: 'paystack',
+      version: '0.0.1',
+    },
+    {
+      instructions: SERVER_INSTRUCTIONS,
+    },
+  );
 
-  const oasPath = path.join(__dirname, "./", "data/paystack.openapi.yaml");
+  const oasPath = path.join(__dirname, './', 'data/paystack.openapi.yaml');
   const openapi = new OpenAPIParser(oasPath);
 
   await openapi.parse();
 
-  const bundledSkillPath = path.join(__dirname, "data", "paystack-skill.md");
+  const bundledSkillPath = path.join(__dirname, 'data', 'paystack-skill.md');
   const skillContent = await loadSkillContent(bundledSkillPath);
 
   registerAllTools(server, openapi, cliApiKey);
@@ -55,6 +58,6 @@ export async function startServer(cliApiKey?: string) {
   const server = await createServer(cliApiKey);
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Paystack MCP Server running on stdio...");
+  console.error('Paystack MCP Server running on stdio...');
   return server;
 }

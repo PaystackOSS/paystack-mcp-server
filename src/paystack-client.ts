@@ -1,5 +1,5 @@
-import { PaystackResponse, PaystackError } from "./types";
-import { createPaystackConfig } from "./config";
+import { PaystackResponse, PaystackError } from './types';
+import { createPaystackConfig } from './config';
 
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 const USER_AGENT = process.env.USER_AGENT || 'Paystack-MCP-Server/0.0.1';
@@ -14,10 +14,10 @@ export class PaystackClient {
     secretKey: string,
     baseUrl: string = PAYSTACK_BASE_URL,
     userAgent: string = USER_AGENT,
-    timeout: number = 30000
+    timeout: number = 30000,
   ) {
     if (!secretKey) {
-      throw new Error("Paystack secret key is required");
+      throw new Error('Paystack secret key is required');
     }
 
     this.secretKey = secretKey;
@@ -33,22 +33,17 @@ export class PaystackClient {
    * @param data - Request body for POST/PUT/PATCH or query params for GET
    */
 
-  async makeRequest<T>(
-    method: string,
-    endpoint: string,
-    data?: any
-  ): Promise<PaystackResponse<T>> {
-
-    let url = `${this.baseUrl}${endpoint}`;
+  async makeRequest<T>(method: string, endpoint: string, data?: any): Promise<PaystackResponse<T>> {
+    const url = `${this.baseUrl}${endpoint}`;
 
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${this.secretKey}`,
+      Authorization: `Bearer ${this.secretKey}`,
       'User-Agent': this.userAgent,
-      'Accept': 'application/json',
+      Accept: 'application/json',
     };
 
     const options: RequestInit = {
-      method: method.toUpperCase()
+      method: method.toUpperCase(),
     };
 
     // Add Content-Type and body for requests with data
@@ -67,11 +62,10 @@ export class PaystackClient {
 
       try {
         responseData = JSON.parse(responseText);
-      } catch (parseError) {
+      } catch {
         // Handle non-JSON responses gracefully (e.g., HTML error pages from API gateways)
-        const responseSnippet = responseText.length > 200 
-          ? responseText.substring(0, 200) + '...' 
-          : responseText;
+        const responseSnippet =
+          responseText.length > 200 ? responseText.substring(0, 200) + '...' : responseText;
         const errorMessage = `Received non-JSON response from server (HTTP ${response.status}): ${responseSnippet}`;
         const nonJsonError = new Error(errorMessage);
         (nonJsonError as any).statusCode = response.status;
@@ -80,7 +74,6 @@ export class PaystackClient {
       }
       return responseData as PaystackResponse<T>;
     } catch (error) {
-
       if (error !== null && (error as any).name === 'NetworkError') {
         const timeoutError = new Error(`Request timeout after ${this.timeout} ms`);
         (timeoutError as any).statusCode = 408;
@@ -88,8 +81,7 @@ export class PaystackClient {
       }
       throw error;
     }
-
-}
+  }
 }
 
 /**

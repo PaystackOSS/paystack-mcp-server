@@ -35,7 +35,7 @@ function redactCardObject(card: any): any {
   if (Array.isArray(card)) {
     return card.map(redactCardObject);
   }
-  
+
   if (typeof card === 'object' && card !== null) {
     const redactedCard: any = {};
     for (const [key, value] of Object.entries(card)) {
@@ -49,10 +49,9 @@ function redactCardObject(card: any): any {
     }
     return redactedCard;
   }
-  
+
   return card;
 }
-
 
 function redactSensitiveData(obj: any): any {
   if (obj === null || obj === undefined) {
@@ -61,8 +60,9 @@ function redactSensitiveData(obj: any): any {
 
   if (typeof obj === 'string') {
     // Redact bearer tokens and API keys in strings
-    return obj.replace(/Bearer\s+\w+/gi, 'Bearer [REDACTED]')
-              .replace(/sk_test_\w+/g, '[REDACTED_SECRET_KEY]');
+    return obj
+      .replace(/Bearer\s+\w+/gi, 'Bearer [REDACTED]')
+      .replace(/sk_test_\w+/g, '[REDACTED_SECRET_KEY]');
   }
 
   if (Array.isArray(obj)) {
@@ -75,9 +75,9 @@ function redactSensitiveData(obj: any): any {
       // Special handling for card objects - only redact cvv and number
       if (key.toLowerCase() === 'card' && typeof value === 'object' && value !== null) {
         redacted[key] = redactCardObject(value);
-      } 
+      }
       // Check if key matches sensitive patterns
-      else if (SENSITIVE_PATTERNS.some(pattern => pattern.test(key))) {
+      else if (SENSITIVE_PATTERNS.some((pattern) => pattern.test(key))) {
         redacted[key] = '[REDACTED]';
       } else {
         redacted[key] = redactSensitiveData(value);
