@@ -2,12 +2,12 @@
 // Simple CLI argument parsing
 function parseApiKey(): string | undefined {
   const args = process.argv;
-  const apiKeyIndex = args.findIndex(arg => arg === '--api-key');
-  
+  const apiKeyIndex = args.findIndex((arg) => arg === '--api-key');
+
   if (apiKeyIndex !== -1 && apiKeyIndex + 1 < args.length) {
     return args[apiKeyIndex + 1];
   }
-  
+
   return undefined;
 }
 
@@ -39,24 +39,25 @@ async function main() {
     process.exit(0);
   }
 
-  const { startServer } = await import("./server");
+  const { startServer } = await import('./server');
 
   // Parse API key from CLI
   const cliApiKey = parseApiKey();
-  
- 
+
   // Check if we have an API key from CLI or environment
   if (!cliApiKey && !process.env.PAYSTACK_TEST_SECRET_KEY) {
     console.error('Error: Paystack API key required.');
-    console.error('Provide via --api-key argument or PAYSTACK_TEST_SECRET_KEY environment variable.');
+    console.error(
+      'Provide via --api-key argument or PAYSTACK_TEST_SECRET_KEY environment variable.',
+    );
     showHelp();
     process.exit(1);
   }
-  
+
   await startServer(cliApiKey);
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error('Fatal error in main():', error);
   process.exit(1);
 });

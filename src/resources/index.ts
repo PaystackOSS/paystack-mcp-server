@@ -1,12 +1,12 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { OpenAPIParser } from "../openapi-parser";
-import { registerOperationListResource } from "./paystack-operation-list";
-import { registerSkillResource } from "./paystack-skill";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { OpenAPIParser } from '../openapi-parser';
+import { registerOperationListResource } from './paystack-operation-list';
+import { registerSkillResource } from './paystack-skill';
 
 export function registerAllResources(
   server: McpServer,
   openapi: OpenAPIParser,
-  skillContent: string
+  skillContent: string,
 ) {
   registerOperationListResource(server, openapi);
   registerSkillResource(server, skillContent);

@@ -1,2 +1,2 @@
-export * as Oas from "./openapi-components";
-export * from "./client";
+export * as Oas from './openapi-components';
+export * from './client';

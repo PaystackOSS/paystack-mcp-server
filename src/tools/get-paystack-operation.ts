@@ -1,27 +1,24 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import * as z from "zod";
-import { OpenAPIParser } from "../openapi-parser";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import * as z from 'zod';
+import { OpenAPIParser } from '../openapi-parser';
 
-export function registerGetPaystackOperationTool(
-  server: McpServer,
-  openapi: OpenAPIParser
-) {
+export function registerGetPaystackOperationTool(server: McpServer, openapi: OpenAPIParser) {
   const operations = openapi.getOperations();
 
   server.registerTool(
-    "get_paystack_operation",
+    'get_paystack_operation',
     {
       description: `Get Paystack API operation details by operation ID. Available
       operations are:
-      ${Object.keys(operations).map(operation => operation).join(", ") }`,
+      ${Object.keys(operations)
+        .map((operation) => operation)
+        .join(', ')}`,
       annotations: {
-        title: "Get endpoint details by operation ID",
+        title: 'Get endpoint details by operation ID',
       },
       inputSchema: {
-        operation_id: z
-          .string()
-          .describe("The operation ID of the Paystack API endpoint"),
-      }
+        operation_id: z.string().describe('The operation ID of the Paystack API endpoint'),
+      },
     },
     async ({ operation_id }) => {
       try {
@@ -31,35 +28,35 @@ export function registerGetPaystackOperationTool(
           return {
             content: [
               {
-                type: "text",
+                type: 'text',
                 text: `Operation with ID ${operation_id} not found.`,
               },
             ],
-            isError: true
-          }
+            isError: true,
+          };
         }
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: JSON.stringify(operation, null, 2),
-              mimeType: "application/json",
+              mimeType: 'application/json',
             },
-          ]
-        }
+          ],
+        };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: `Error retrieving operation: ${errorMessage}`,
             },
           ],
-          isError: true
-        }
+          isError: true,
+        };
       }
-    }
+    },
   );
 }

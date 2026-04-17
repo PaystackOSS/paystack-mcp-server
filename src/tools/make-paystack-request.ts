@@ -1,52 +1,52 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import * as z from "zod";
-import { PaystackClient } from "../paystack-client";
-import { createPaystackConfig } from "../config";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import * as z from 'zod';
+import { PaystackClient } from '../paystack-client';
+import { createPaystackConfig } from '../config';
 
 export function registerMakePaystackRequestTool(server: McpServer, cliApiKey?: string) {
   // Create PaystackClient with CLI API key or fallback to environment
   const config = createPaystackConfig(cliApiKey);
   const paystackClient = new PaystackClient(config.secretKey);
-  
+
   server.registerTool(
-    "make_paystack_request",
+    'make_paystack_request',
     {
       description: `Make a Paystack API request using the details of the operation. Be sure 
     to get all operation details including method, path path parameters, query parameters, 
     and request body before making a call.`,
       annotations: {
-        title: "Make a Paystack API request",
+        title: 'Make a Paystack API request',
       },
       inputSchema: {
         request: z.object({
-          method: z.string().describe("HTTP method of the API request"),
-          path: z.string().describe("Path of the API request"),
-          data: z.looseObject({}).optional().describe("Request data"),
-        })
-      }
+          method: z.string().describe('HTTP method of the API request'),
+          path: z.string().describe('Path of the API request'),
+          data: z.looseObject({}).optional().describe('Request data'),
+        }),
+      },
     },
     async ({ request }) => {
       try {
         const response = await paystackClient.makeRequest(
           request.method,
           request.path,
-          request.data
-        )
+          request.data,
+        );
 
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: JSON.stringify(response, null, 2),
-              mimeType: "application/json",
+              mimeType: 'application/json',
             },
-          ]
-        }
-      } catch(error) {
+          ],
+        };
+      } catch (error) {
         // Follow MCP best practices: return isError flag instead of throwing
         const errorMessage = error instanceof Error ? error.message : String(error);
         const statusCode = (error as any).statusCode;
-        
+
         let detailedMessage = `Unable to make request: ${errorMessage}`;
         if (statusCode) {
           detailedMessage = `Unable to make request (HTTP ${statusCode}): ${errorMessage}`;
@@ -55,13 +55,13 @@ export function registerMakePaystackRequestTool(server: McpServer, cliApiKey?: s
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: detailedMessage,
             },
           ],
-          isError: true
-        }
+          isError: true,
+        };
       }
-    }
+    },
   );
 }

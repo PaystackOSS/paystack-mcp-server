@@ -17,7 +17,7 @@ export interface PaystackError {
   message: string;
   meta?: {
     nextStep?: string;
-  },
+  };
   type?: string;
   code?: string;
 }
