@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/paystackoss-paystack-mcp-server-badge.png)](https://mseep.ai/app/paystackoss-paystack-mcp-server)
+
 # Paystack MCP Server
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that enables AI assistants to interact with the full range of [Paystack APIs](https://paystack.com/docs/api/).
